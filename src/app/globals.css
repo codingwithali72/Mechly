@@ -48,19 +48,19 @@
 
 :root {
   --background: 0 0% 100%;
-  --foreground: 216 55% 10%;
+  --foreground: 215 50% 23%; /* #1D3557 Dark Navy */
   --card: 0 0% 100%;
-  --card-foreground: 216 55% 10%;
+  --card-foreground: 215 50% 23%;
   --popover: 0 0% 100%;
-  --popover-foreground: 216 55% 10%;
-  --primary: 3 79% 55%;
+  --popover-foreground: 215 50% 23%;
+  --primary: 355 78% 56%; /* #E63946 Primary Red */
   --primary-foreground: 0 0% 100%;
-  --secondary: 210 40% 98%;
-  --secondary-foreground: 216 55% 10%;
-  --muted: 210 40% 98%;
-  --muted-foreground: 215 14% 44%;
-  --accent: 210 40% 98%;
-  --accent-foreground: 216 55% 10%;
+  --secondary: 194 15% 95%; /* Lightened from 5C757D for secondary bg */
+  --secondary-foreground: 215 50% 23%;
+  --muted: 194 15% 95%;
+  --muted-foreground: 194 15% 43%; /* #5C757D Secondary Text */
+  --accent: 194 15% 95%;
+  --accent-foreground: 215 50% 23%;
   --destructive: 353 76% 56%;
   --destructive-foreground: 0 0% 100%;
   --border: 195 15% 85%;

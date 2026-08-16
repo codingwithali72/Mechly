@@ -37,7 +37,7 @@ export default async function CustomerHome() {
     const { data: dbServices, error: sError } = await supabase
       .from('services')
       .select('*')
-      .limit(4)
+      .limit(7)
       
     if (sError) throw new Error('Services error: ' + sError.message)
 
@@ -67,28 +67,26 @@ export default async function CustomerHome() {
       
       {/* Header */}
       <header className="flex justify-between items-center px-5 pt-8 pb-4">
-        <div>
-          <h2 className="text-sm font-semibold text-[#5C757D] mb-0.5">Hi, {firstName} 👋</h2>
-          <div className="flex items-center gap-1 cursor-pointer">
-            <MapPin className="h-4 w-4 text-[#E63946]" />
-            <span className="text-[13px] font-bold">{locationText}</span>
-            <span className="text-[10px] ml-1">▼</span>
-          </div>
+        <div className="flex items-center gap-2 cursor-pointer">
+          <MapPin className="h-4 w-4 text-[#E63946]" />
+          <span className="text-[13px] font-bold">{locationText}</span>
+          <span className="text-[10px]">▼</span>
         </div>
-        <button className="h-10 w-10 flex items-center justify-center rounded-full hover:bg-slate-50 transition-colors">
-           <Bell className="h-6 w-6 text-[#1D3557]" />
+        <button className="h-10 w-10 flex items-center justify-center rounded-full hover:bg-slate-50 transition-colors relative">
+           <Bell className="h-5 w-5 text-[#1D3557]" />
         </button>
       </header>
 
       <main className="px-5 space-y-8">
         
         {/* Hero Section */}
-        <section className="mt-4 relative">
+        <section className="mt-2 relative">
+          <h2 className="text-sm font-semibold text-[#5C757D] mb-1">Hi, {firstName} 👋</h2>
           <div className="max-w-[70%]">
-            <h1 className="text-3xl font-bold tracking-tight text-[#0C182A] leading-[1.2]">
+            <h1 className="text-[32px] font-bold tracking-tight text-[#1D3557] leading-[1.15]">
               Vehicle trouble?
             </h1>
-            <h2 className="text-3xl font-bold text-[#E53935] tracking-tight leading-[1.2] mt-1">
+            <h2 className="text-[32px] font-bold text-[#E63946] tracking-tight leading-[1.15] mt-1">
               We'll bring the<br />mechanic to you.
             </h2>
           </div>
@@ -102,10 +100,10 @@ export default async function CustomerHome() {
           </div>
 
           <div className="mt-8 relative z-10">
-            <Link href="/book/problem?mode=scheduled" className={buttonVariants({ size: "lg" }) + " w-full h-[52px] rounded-full bg-[#E53935] hover:bg-[#d32f2f] text-white font-semibold text-[15px] flex justify-between items-center px-6 shadow-[0_8px_25px_rgba(229,57,53,0.25)]"}>
+            <Link href="/book/problem?mode=scheduled" className={buttonVariants({ size: "lg" }) + " w-[80%] h-[52px] rounded-full bg-[#E63946] hover:bg-[#d32f2f] text-white font-semibold text-[15px] flex justify-between items-center px-6 shadow-[0_8px_25px_rgba(230,57,70,0.3)]"}>
               Get a Mechanic
               <div className="h-7 w-7 bg-white rounded-full flex items-center justify-center">
-                <ArrowRight className="h-4 w-4 text-[#E53935]" strokeWidth={3} />
+                <ArrowRight className="h-4 w-4 text-[#E63946]" strokeWidth={3} />
               </div>
             </Link>
           </div>
@@ -122,15 +120,23 @@ export default async function CustomerHome() {
               const IconComponent = service.icon ? ICON_MAP[service.icon] || Wrench : Wrench
               return (
                 <Link href={`/book/problem?mode=scheduled&service=${service.id}`} key={service.id} className="flex flex-col items-center gap-[6px] group">
-                  <div className="flex h-[56px] w-[56px] items-center justify-center rounded-[20px] bg-[#F8FAFC] transition-transform group-hover:scale-105 border border-slate-100 shadow-[0_2px_10px_rgb(0,0,0,0.01)]">
-                    <IconComponent className="h-6 w-6 text-[#0C182A]" strokeWidth={1.5} />
+                  <div className="flex h-[56px] w-[56px] items-center justify-center rounded-[18px] bg-white transition-transform group-hover:scale-105 shadow-[0_4px_15px_rgb(0,0,0,0.04)]">
+                    <IconComponent className="h-6 w-6 text-[#1D3557]" strokeWidth={1.5} />
                   </div>
-                  <span className="text-center text-[11px] font-semibold text-[#0C182A] leading-tight">
+                  <span className="text-center text-[11px] font-medium text-[#1D3557] leading-tight px-1">
                     {service.name}
                   </span>
                 </Link>
               )
             })}
+            <Link href="/book/problem?mode=scheduled" className="flex flex-col items-center gap-[6px] group">
+              <div className="flex h-[56px] w-[56px] items-center justify-center rounded-[18px] bg-white transition-transform group-hover:scale-105 shadow-[0_4px_15px_rgb(0,0,0,0.04)]">
+                <MoreHorizontal className="h-6 w-6 text-[#1D3557]" strokeWidth={1.5} />
+              </div>
+              <span className="text-center text-[11px] font-medium text-[#1D3557] leading-tight px-1">
+                More
+              </span>
+            </Link>
           </div>
         </section>
 
@@ -141,36 +147,28 @@ export default async function CustomerHome() {
             <Link href="/vehicles/add" className="text-xs font-semibold text-[#E63946]">Add New</Link>
           </div>
           
-          <div className="space-y-3">
+          <div className="flex gap-3 overflow-x-auto pb-2 -mx-5 px-5 scrollbar-hide">
             {!vehicles || vehicles.length === 0 ? (
-              <div className="bg-slate-50 rounded-[20px] p-6 text-center border border-dashed border-slate-200">
-                <Car className="h-8 w-8 text-slate-300 mx-auto mb-2" />
-                <p className="text-sm text-slate-500 mb-3">You haven't added any vehicles yet.</p>
-                <Link href="/vehicles/add" className={buttonVariants({ variant: "outline", size: "sm" }) + " rounded-full"}>
-                  <Plus className="h-4 w-4 mr-1" /> Add your first vehicle
+              <div className="bg-slate-50 rounded-[16px] p-4 text-center border border-dashed border-slate-200 w-full">
+                <Car className="h-6 w-6 text-slate-300 mx-auto mb-2" />
+                <p className="text-xs text-slate-500 mb-2">You haven't added any vehicles yet.</p>
+                <Link href="/vehicles/add" className={buttonVariants({ variant: "outline", size: "sm" }) + " rounded-full text-xs h-8"}>
+                  Add vehicle
                 </Link>
               </div>
             ) : (
               vehicles.map((vehicle) => (
-                <div key={vehicle.id} className="bg-white rounded-[20px] p-4 flex items-center gap-4 shadow-[0_4px_20px_rgb(0,0,0,0.06)] border border-slate-100">
-                  <div className="h-12 w-12 bg-[#F8FAFC] rounded-full flex items-center justify-center shrink-0 border border-slate-100">
+                <div key={vehicle.id} className="bg-white rounded-[16px] p-3 flex items-center gap-3 shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-slate-100 min-w-[200px] shrink-0">
+                  <div className="h-10 w-10 bg-[#F8FAFC] rounded-full flex items-center justify-center shrink-0 border border-slate-100">
                     {vehicle.vehicle_type === 'MOTORCYCLE' || vehicle.vehicle_type === 'SCOOTER' ? (
-                      <Bike className="h-6 w-6 text-[#1D3557]" strokeWidth={1.5} />
+                      <Bike className="h-5 w-5 text-[#1D3557]" strokeWidth={1.5} />
                     ) : (
-                      <Car className="h-6 w-6 text-[#1D3557]" strokeWidth={1.5} />
+                      <Car className="h-5 w-5 text-[#1D3557]" strokeWidth={1.5} />
                     )}
                   </div>
                   <div>
-                    <h4 className="font-bold text-[14px]">{vehicle.brand} {vehicle.model}</h4>
-                    <p className="text-[12px] font-medium text-[#5C757D] capitalize">{vehicle.vehicle_type.toLowerCase()} {vehicle.registration_number ? `• ${vehicle.registration_number}` : ''}</p>
-                  </div>
-                  <div className="ml-auto">
-                    <form action={deleteVehicle}>
-                      <input type="hidden" name="vehicle_id" value={vehicle.id} />
-                      <button type="submit" className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors active:scale-95" title="Delete Vehicle">
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    </form>
+                    <h4 className="font-bold text-[13px] whitespace-nowrap">{vehicle.brand} {vehicle.model}</h4>
+                    <p className="text-[11px] font-medium text-[#5C757D] capitalize">{vehicle.vehicle_type.toLowerCase()}</p>
                   </div>
                 </div>
               ))
@@ -189,20 +187,33 @@ export default async function CustomerHome() {
               const ServiceIcon = booking.services?.icon ? ICON_MAP[booking.services.icon] || Wrench : Wrench
               const mechanicName = booking.mechanics?.profiles?.full_name || 'Assigned Mechanic'
               const date = new Date(booking.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+              const price = booking.final_amount || booking.estimated_total
+              
+              let statusClasses = "bg-[#F1FAEE] text-[#2A9D8F]" // Completed
+              let statusText = booking.status
+              if (booking.status === 'SEARCHING' || booking.status === 'REQUESTED') {
+                statusClasses = "bg-orange-50 text-orange-600"
+                statusText = "Pending"
+              } else if (booking.status === 'ACCEPTED' || booking.status === 'IN_PROGRESS') {
+                statusClasses = "bg-blue-50 text-blue-600"
+                statusText = "On the way"
+              }
+
               return (
-                <Link key={booking.id} href={`/tracking/${booking.id}`} className="block bg-white rounded-[20px] p-4 shadow-[0_4px_20px_rgb(0,0,0,0.06)] border border-slate-100 active:scale-[0.98] transition-transform">
-                  <div className="flex justify-between items-start">
+                <Link key={booking.id} href={`/tracking/${booking.id}`} className="block bg-white rounded-[18px] p-4 shadow-[0_4px_15px_rgb(0,0,0,0.04)] border border-slate-100 active:scale-[0.98] transition-transform">
+                  <div className="flex justify-between items-center">
                     <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 bg-[#F8FAFC] rounded-full flex items-center justify-center shrink-0 border border-slate-100">
+                      <div className="h-[44px] w-[44px] bg-[#F8FAFC] rounded-2xl flex items-center justify-center shrink-0 border border-slate-100">
                         <ServiceIcon className="h-5 w-5 text-[#1D3557]" strokeWidth={1.5} />
                       </div>
                       <div>
-                        <h4 className="font-bold text-[14px]">{booking.services?.name || 'Service Request'}</h4>
-                        <p className="text-[11px] font-medium text-[#5C757D] mt-0.5">{booking.status === 'SEARCHING' || booking.status === 'REQUESTED' ? 'Finding a mechanic...' : `${mechanicName} • ${date}`}</p>
+                        <h4 className="font-bold text-[13px]">{booking.services?.name || 'Service Request'}</h4>
+                        <p className="text-[11px] font-medium text-[#5C757D] mt-0.5">{mechanicName}</p>
+                        <p className="text-[10px] font-medium text-[#5C757D] mt-0.5">{date} • ₹{price}</p>
                       </div>
                     </div>
-                    <Badge className="bg-[#E6F4EA] text-[#2A9D8F] hover:bg-[#E6F4EA] border border-[#2A9D8F]/20 px-3 py-1 rounded-full text-[10px] font-bold shadow-none">
-                      {booking.status}
+                    <Badge className={`${statusClasses} border-none px-3 py-1 rounded-full text-[10px] font-bold shadow-none`}>
+                      {statusText}
                     </Badge>
                   </div>
                 </Link>
