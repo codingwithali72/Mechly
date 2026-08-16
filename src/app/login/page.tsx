@@ -5,7 +5,9 @@ import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 
-export default function LoginPage() {
+export default async function LoginPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
+  const { error } = await searchParams
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
       <Card className="w-full max-w-md">
@@ -19,6 +21,11 @@ export default function LoginPage() {
         </CardHeader>
         <form action={login}>
           <CardContent className="space-y-4">
+            {error && (
+              <div className="p-3 text-sm font-medium text-destructive bg-destructive/10 rounded-md border border-destructive/20">
+                {error}
+              </div>
+            )}
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input

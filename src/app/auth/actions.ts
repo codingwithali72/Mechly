@@ -19,7 +19,7 @@ export async function login(formData: FormData) {
   })
 
   if (error) {
-    throw new Error(error.message)
+    redirect(`/login?error=${encodeURIComponent(error.message)}`)
   }
 
   if (data.user) {
@@ -64,7 +64,7 @@ export async function signup(formData: FormData) {
   })
 
   if (error) {
-    throw new Error(error.message)
+    redirect(`/signup?error=${encodeURIComponent(error.message)}`)
   }
 
   redirect('/home')
