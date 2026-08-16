@@ -21,21 +21,26 @@ const ICON_MAP: Record<string, React.ElementType> = {
 }
 
 export default async function CustomerHome() {
-  const { profile, customer } = await ensureCustomerProfile()
-  const supabase = await createClient()
+  try {
+    const { profile, customer } = await ensureCustomerProfile()
+    const supabase = await createClient()
 
-  const { data: vehicles } = await supabase
-    .from('vehicles')
-    .select('*')
-    .eq('customer_id', customer.id)
-    .order('created_at', { ascending: false })
+    const { data: vehicles, error: vError } = await supabase
+      .from('vehicles')
+      .select('*')
+      .eq('customer_id', customer.id)
+      .order('created_at', { ascending: false })
 
-  const { data: dbServices } = await supabase
-    .from('services')
-    .select('*')
-    .limit(8)
+    if (vError) throw new Error('Vehicles error: ' + vError.message)
 
-  const firstName = profile.full_name?.split(' ')[0] || 'User'
+    const { data: dbServices, error: sError } = await supabase
+      .from('services')
+      .select('*')
+      .limit(8)
+      
+    if (sError) throw new Error('Services error: ' + sError.message)
+
+    const firstName = profile?.full_name?.split(' ')[0] || 'User'
 
   return (
     <div className="bg-white min-h-screen text-[#1D3557] pb-24 font-sans selection:bg-[#E63946] selection:text-white max-w-md mx-auto md:border-x border-slate-100 shadow-2xl relative">
@@ -192,4 +197,13 @@ export default async function CustomerHome() {
 
     </div>
   )
+  } catch (error: any) {
+    return (
+      <div className="p-8 text-red-500 font-mono break-all">
+        <h1 className="text-2xl font-bold mb-4">Debug Error</h1>
+        <p>{error?.message || 'Unknown error'}</p>
+        <pre className="mt-4 text-xs">{error?.stack}</pre>
+      </div>
+    )
+  }
 }

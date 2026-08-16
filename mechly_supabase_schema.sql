@@ -23,7 +23,7 @@ begin
   ) then
     create type public.user_role as enum (
       'CUSTOMER',
-      'MECHANIC',
+      'MECHANIC', 
       'ADMIN'
     );
   end if;
