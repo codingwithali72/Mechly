@@ -1,7 +1,8 @@
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { MapPin, Bell, ArrowRight, Battery, Bike, Wrench, Zap, Droplets, Car, Settings, MoreHorizontal, User, CalendarDays, Navigation } from 'lucide-react'
+import { MapPin, Bell, ArrowRight, Battery, Bike, Wrench, Zap, Droplets, Car, Settings, MoreHorizontal, User, CalendarDays, Navigation, Plus } from 'lucide-react'
 import Link from 'next/link'
+import { createClient, ensureCustomerProfile } from '@/lib/supabase/server'
 
 const SERVICES = [
   { id: '1', name: 'Battery', icon: Battery },
@@ -14,14 +15,25 @@ const SERVICES = [
   { id: '8', name: 'More', icon: MoreHorizontal },
 ]
 
-export default function CustomerHome() {
+export default async function CustomerHome() {
+  const { profile, customer } = await ensureCustomerProfile()
+  const supabase = await createClient()
+
+  const { data: vehicles } = await supabase
+    .from('vehicles')
+    .select('*')
+    .eq('customer_id', customer.id)
+    .order('created_at', { ascending: false })
+
+  const firstName = profile.full_name?.split(' ')[0] || 'User'
+
   return (
     <div className="bg-white min-h-screen text-[#1D3557] pb-24 font-sans selection:bg-[#E63946] selection:text-white max-w-md mx-auto md:border-x border-slate-100 shadow-2xl relative">
       
       {/* Header */}
       <header className="flex justify-between items-center px-5 pt-8 pb-4">
         <div>
-          <h2 className="text-sm font-semibold text-[#5C757D] mb-0.5">Hi, Demo 👋</h2>
+          <h2 className="text-sm font-semibold text-[#5C757D] mb-0.5">Hi, {firstName} 👋</h2>
           <div className="flex items-center gap-1 cursor-pointer">
             <MapPin className="h-4 w-4 text-[#E63946]" />
             <span className="text-[13px] font-bold">Kharghar, Navi Mumbai</span>
@@ -90,14 +102,33 @@ export default function CustomerHome() {
             <h3 className="text-base font-bold tracking-tight">My Vehicles</h3>
             <Link href="/vehicles/add" className="text-xs font-semibold text-[#E63946]">Add New</Link>
           </div>
-          <div className="bg-white rounded-[20px] p-4 flex items-center gap-4 shadow-[0_4px_20px_rgb(0,0,0,0.06)] border border-slate-100">
-            <div className="h-12 w-12 bg-[#F8FAFC] rounded-full flex items-center justify-center shrink-0 border border-slate-100">
-              <Bike className="h-6 w-6 text-[#1D3557]" strokeWidth={1.5} />
-            </div>
-            <div>
-              <h4 className="font-bold text-[14px]">Honda Activa 6G</h4>
-              <p className="text-[12px] font-medium text-[#5C757D]">Scooter</p>
-            </div>
+          
+          <div className="space-y-3">
+            {!vehicles || vehicles.length === 0 ? (
+              <div className="bg-slate-50 rounded-[20px] p-6 text-center border border-dashed border-slate-200">
+                <Car className="h-8 w-8 text-slate-300 mx-auto mb-2" />
+                <p className="text-sm text-slate-500 mb-3">You haven't added any vehicles yet.</p>
+                <Link href="/vehicles/add" className={buttonVariants({ variant: "outline", size: "sm" }) + " rounded-full"}>
+                  <Plus className="h-4 w-4 mr-1" /> Add your first vehicle
+                </Link>
+              </div>
+            ) : (
+              vehicles.map((vehicle) => (
+                <div key={vehicle.id} className="bg-white rounded-[20px] p-4 flex items-center gap-4 shadow-[0_4px_20px_rgb(0,0,0,0.06)] border border-slate-100">
+                  <div className="h-12 w-12 bg-[#F8FAFC] rounded-full flex items-center justify-center shrink-0 border border-slate-100">
+                    {vehicle.vehicle_type === 'MOTORCYCLE' || vehicle.vehicle_type === 'SCOOTER' ? (
+                      <Bike className="h-6 w-6 text-[#1D3557]" strokeWidth={1.5} />
+                    ) : (
+                      <Car className="h-6 w-6 text-[#1D3557]" strokeWidth={1.5} />
+                    )}
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-[14px]">{vehicle.brand} {vehicle.model}</h4>
+                    <p className="text-[12px] font-medium text-[#5C757D] capitalize">{vehicle.vehicle_type.toLowerCase()} {vehicle.registration_number ? `• ${vehicle.registration_number}` : ''}</p>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </section>
 

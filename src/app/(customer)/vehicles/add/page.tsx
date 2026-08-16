@@ -4,6 +4,7 @@ import { Label } from '@/components/ui/label'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import Link from 'next/link'
+import { addVehicle } from '../actions'
 
 export default function AddVehiclePage() {
   return (
@@ -15,7 +16,7 @@ export default function AddVehiclePage() {
             Tell us what you drive. We only need the basics to get you started.
           </CardDescription>
         </CardHeader>
-        <form>
+        <form action={addVehicle}>
           <CardContent className="space-y-6">
             
             <div className="space-y-4">
