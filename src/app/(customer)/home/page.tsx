@@ -16,7 +16,7 @@ const SERVICES = [
 
 export default function CustomerHome() {
   return (
-    <div className="bg-white min-h-screen text-[#1D3557] pb-24 font-sans selection:bg-[#E63946] selection:text-white">
+    <div className="bg-white min-h-screen text-[#1D3557] pb-24 font-sans selection:bg-[#E63946] selection:text-white max-w-md mx-auto md:border-x border-slate-100 shadow-2xl relative">
       
       {/* Header */}
       <header className="flex justify-between items-center px-5 pt-8 pb-4">
@@ -47,14 +47,14 @@ export default function CustomerHome() {
           </div>
           
           {/* Mock Illustration Placeholder (absolute right) */}
-          <div className="absolute right-0 top-0 bottom-14 w-[35%] flex items-center justify-end">
+          <div className="absolute right-0 top-0 bottom-14 w-[35%] flex items-center justify-end pointer-events-none">
              {/* This circle mocks the mechanic illustration bounds */}
             <div className="h-[120px] w-[120px] bg-slate-100 rounded-full flex items-center justify-center -mr-2 mt-4">
               <Wrench className="h-10 w-10 text-slate-300" />
             </div>
           </div>
 
-          <div className="mt-8">
+          <div className="mt-8 relative z-10">
             <Link href="/book/problem?mode=scheduled" className={buttonVariants({ size: "lg" }) + " w-full h-[52px] rounded-full bg-[#E53935] hover:bg-[#d32f2f] text-white font-semibold text-[15px] flex justify-between items-center px-6 shadow-[0_8px_25px_rgba(229,57,53,0.25)]"}>
               Get a Mechanic
               <div className="h-7 w-7 bg-white rounded-full flex items-center justify-center">
@@ -127,7 +127,7 @@ export default function CustomerHome() {
       </main>
 
       {/* Fixed Bottom Navigation exactly matching mockup */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 px-6 py-4 pb-safe flex justify-between items-center shadow-[0_-10px_40px_rgb(0,0,0,0.04)] z-50">
+      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 px-6 py-4 pb-safe flex justify-between items-center shadow-[0_-10px_40px_rgb(0,0,0,0.04)] z-50 max-w-md mx-auto md:border-x">
         <Link href="/home" className="flex flex-col items-center text-[#E63946] gap-1 relative">
           <Navigation className="h-[22px] w-[22px]" strokeWidth={2.5} />
           <span className="text-[10px] font-bold">Home</span>
