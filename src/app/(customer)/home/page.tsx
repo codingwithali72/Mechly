@@ -181,15 +181,15 @@ export default async function CustomerHome() {
           <Navigation className="h-[22px] w-[22px]" strokeWidth={2.5} />
           <span className="text-[10px] font-bold">Home</span>
         </Link>
-        <Link href="#" className="flex flex-col items-center text-[#A0AEC0] hover:text-[#1D3557] transition-colors gap-1">
+        <Link href="/bookings" className="flex flex-col items-center text-[#A0AEC0] hover:text-[#1D3557] transition-colors gap-1">
           <CalendarDays className="h-[22px] w-[22px]" strokeWidth={2} />
           <span className="text-[10px] font-bold">Bookings</span>
         </Link>
-        <Link href="#" className="flex flex-col items-center text-[#A0AEC0] hover:text-[#1D3557] transition-colors gap-1">
+        <Link href="/vehicles/add" className="flex flex-col items-center text-[#A0AEC0] hover:text-[#1D3557] transition-colors gap-1">
           <Car className="h-[22px] w-[22px]" strokeWidth={2} />
           <span className="text-[10px] font-bold">Vehicles</span>
         </Link>
-        <Link href="#" className="flex flex-col items-center text-[#A0AEC0] hover:text-[#1D3557] transition-colors gap-1">
+        <Link href="/profile" className="flex flex-col items-center text-[#A0AEC0] hover:text-[#1D3557] transition-colors gap-1">
           <User className="h-[22px] w-[22px]" strokeWidth={2} />
           <span className="text-[10px] font-bold">Profile</span>
         </Link>
