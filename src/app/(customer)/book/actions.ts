@@ -54,7 +54,16 @@ export async function createBooking(formData: FormData) {
   const scheduled_end = new Date(scheduled_start)
   scheduled_end.setHours(scheduled_end.getHours() + 2) // Roughly 2 hour block
 
-  // 3. Create Booking (job)
+  // 3. Get Base Price
+  let basePrice = 150
+  if (service) {
+    const { data: dbService } = await supabase.from('services').select('base_price').eq('id', service).single()
+    if (dbService?.base_price) {
+      basePrice = dbService.base_price
+    }
+  }
+
+  // 4. Create Booking (job)
   const bookingCode = 'BOOK-' + new Date().toISOString().replace(/\D/g, '').slice(0, 8) + '-' + Math.floor(Math.random() * 1000).toString().padStart(3, '0')
 
   const { data: booking, error: bookingError } = await supabase.from('bookings').insert({
@@ -67,6 +76,8 @@ export async function createBooking(formData: FormData) {
     problem_description: problem_description || null,
     scheduled_start: scheduled_start.toISOString(),
     scheduled_end: scheduled_end.toISOString(),
+    visit_charge: basePrice,
+    estimated_total: basePrice,
     status: mode === 'urgent' ? 'SEARCHING' : 'REQUESTED'
   }).select('id').single()
 

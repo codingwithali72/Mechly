@@ -17,10 +17,17 @@ export default async function BookingSummaryPage({ searchParams }: { searchParam
   const { customer } = await ensureCustomerProfile()
   const supabase = await createClient()
 
-  const { data: dbService } = await supabase.from('services').select('name').eq('id', service).single()
+  const { data: dbService } = await supabase.from('services').select('name, base_price').eq('id', service).single()
   const { data: dbVehicle } = await supabase.from('vehicles').select('id, brand, model').eq('customer_id', customer.id).limit(1).single()
   
   let mechanicName = 'Unassigned (Auto-assign)'
+  if (isUrgent) {
+    mechanicName = "Unassigned (Immediate Dispatch)"
+  }
+
+  const basePrice = dbService?.base_price || 150
+  const priceLabel = dbService ? "Service Estimate" : "Normal Visit Charge"
+
   if (mechanic_id) {
     const { data: mechanic } = await supabase.from('mechanics').select('*, profiles(full_name)').eq('id', mechanic_id).single()
     if (mechanic && (mechanic as any).profiles) {
@@ -80,11 +87,11 @@ export default async function BookingSummaryPage({ searchParams }: { searchParam
 
           <div className="bg-muted p-4 rounded-lg space-y-2 mt-6">
             <div className="flex justify-between items-center text-lg font-bold">
-              <span>Estimated Visit Charge</span>
-              <span>₹500</span>
+              <span>{priceLabel}</span>
+              <span>₹{basePrice}</span>
             </div>
-            <p className="text-sm text-muted-foreground">
-              Final repair cost may change after inspection. Additional work requires your approval.
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              * Final repair cost may change after inspection. Additional work requires your approval. <strong>Cost of spare parts is NOT included in this estimate.</strong>
             </p>
           </div>
 
