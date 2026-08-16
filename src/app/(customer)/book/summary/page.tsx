@@ -5,10 +5,30 @@ import { Separator } from '@/components/ui/separator'
 import Link from 'next/link'
 
 import { AlertTriangle, CalendarCheck } from 'lucide-react'
+import { createClient, ensureCustomerProfile } from '@/lib/supabase/server'
+import { createBooking } from '../actions'
 
-export default async function BookingSummaryPage({ searchParams }: { searchParams: Promise<{ mode?: string }> }) {
-  const { mode } = await searchParams
+export default async function BookingSummaryPage({ searchParams }: { searchParams: Promise<{ mode?: string, service?: string, problem_description?: string, city?: string, area?: string, address?: string, time_slot?: string, mechanic_id?: string }> }) {
+  const { mode, service, problem_description, city, area, address, time_slot, mechanic_id } = await searchParams
   const isUrgent = mode === 'urgent'
+  const modeParam = mode || 'scheduled'
+
+  const { customer } = await ensureCustomerProfile()
+  const supabase = await createClient()
+
+  const { data: dbService } = await supabase.from('services').select('name').eq('id', service).single()
+  const { data: dbVehicle } = await supabase.from('vehicles').select('id, brand, model').eq('customer_id', customer.id).limit(1).single()
+  
+  let mechanicName = 'Unassigned (Auto-assign)'
+  if (mechanic_id) {
+    const { data: mechanic } = await supabase.from('mechanics').select('*, profiles(full_name)').eq('id', mechanic_id).single()
+    if (mechanic && (mechanic as any).profiles) {
+      mechanicName = `${(mechanic as any).profiles.full_name} (${mechanic.rating_average} ★)`
+    }
+  }
+
+  const backUrl = isUrgent ? `/book/location?mode=${modeParam}${service ? `&service=${service}` : ''}${problem_description ? `&problem_description=${problem_description}` : ''}` : `/book/mechanics?mode=${modeParam}${service ? `&service=${service}` : ''}${problem_description ? `&problem_description=${problem_description}` : ''}${city ? `&city=${city}` : ''}${area ? `&area=${area}` : ''}${address ? `&address=${address}` : ''}${time_slot ? `&time_slot=${time_slot}` : ''}`
+
   return (
     <div className="p-4 md:p-8 md:max-w-2xl md:mx-auto">
       <Card>
@@ -31,29 +51,29 @@ export default async function BookingSummaryPage({ searchParams }: { searchParam
           <div className="space-y-4">
             <div className="flex justify-between items-start">
               <span className="text-muted-foreground font-medium">Vehicle</span>
-              <span className="font-semibold text-right">Honda Activa 6G</span>
+              <span className="font-semibold text-right">{dbVehicle ? `${dbVehicle.brand} ${dbVehicle.model}` : 'No vehicle found'}</span>
             </div>
             <Separator />
             <div className="flex justify-between items-start">
               <span className="text-muted-foreground font-medium">Problem</span>
-              <span className="font-semibold text-right">Bike won't start</span>
+              <span className="font-semibold text-right">{problem_description || dbService?.name || 'Not specified'}</span>
             </div>
             <Separator />
             <div className="flex justify-between items-start">
               <span className="text-muted-foreground font-medium">Location</span>
-              <span className="font-semibold text-right">Kharghar, Navi Mumbai</span>
+              <span className="font-semibold text-right">{area || city || 'Unknown'}, {address}</span>
             </div>
             <Separator />
             <div className="flex justify-between items-start">
               <span className="text-muted-foreground font-medium">Time</span>
               <span className="font-semibold text-right">
-                {isUrgent ? 'Immediate - Right Now' : 'Today, 04:00 PM - 06:00 PM'}
+                {isUrgent ? 'Immediate - Right Now' : time_slot || 'Today'}
               </span>
             </div>
             <Separator />
             <div className="flex justify-between items-start">
               <span className="text-muted-foreground font-medium">Assigned Mechanic</span>
-              <span className="font-semibold text-right text-primary">Ahmed Doe (4.8 ★)</span>
+              <span className="font-semibold text-right text-primary">{mechanicName}</span>
             </div>
           </div>
 
@@ -68,12 +88,24 @@ export default async function BookingSummaryPage({ searchParams }: { searchParam
           </div>
 
         </CardContent>
-        <CardFooter className="flex flex-col gap-4 border-t p-6">
-          <Link href="/tracking/BOOK-20260816-0001" className={buttonVariants({ variant: "default", size: "lg" }) + " w-full text-lg font-semibold"}>CONFIRM BOOKING</Link>
-          <Link href={isUrgent ? "/home" : "/book/mechanics?mode=scheduled"} className={buttonVariants({ variant: "ghost" }) + " w-full"}>
-            {isUrgent ? "Cancel Request" : "Back to Mechanics"}
-          </Link>
-        </CardFooter>
+        <form action={createBooking}>
+          <input type="hidden" name="mode" value={modeParam} />
+          {service && <input type="hidden" name="service" value={service} />}
+          {problem_description && <input type="hidden" name="problem_description" value={problem_description} />}
+          {city && <input type="hidden" name="city" value={city} />}
+          {area && <input type="hidden" name="area" value={area} />}
+          {address && <input type="hidden" name="address" value={address} />}
+          {time_slot && <input type="hidden" name="time_slot" value={time_slot} />}
+          {mechanic_id && <input type="hidden" name="mechanic_id" value={mechanic_id} />}
+          {dbVehicle && <input type="hidden" name="vehicle_id" value={dbVehicle.id} />}
+          
+          <CardFooter className="flex flex-col gap-4 border-t p-6">
+            <Button type="submit" className="w-full text-lg font-semibold" size="lg">CONFIRM BOOKING</Button>
+            <Link href={backUrl} className={buttonVariants({ variant: "ghost" }) + " w-full"}>
+              {isUrgent ? "Cancel Request" : "Back to Mechanics"}
+            </Link>
+          </CardFooter>
+        </form>
       </Card>
     </div>
   )

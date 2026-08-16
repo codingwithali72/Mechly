@@ -13,9 +13,9 @@ const COMMON_PROBLEMS = [
   "Other"
 ]
 
-export default async function ProblemDescriptionPage({ searchParams }: { searchParams: Promise<{ mode?: string }> }) {
-  const { mode } = await searchParams
-  const modeParam = mode ? `?mode=${mode}` : '?mode=scheduled'
+export default async function ProblemDescriptionPage({ searchParams }: { searchParams: Promise<{ mode?: string, service?: string }> }) {
+  const { mode, service } = await searchParams
+  const modeParam = mode || 'scheduled'
   return (
     <div className="p-4 md:p-8 md:max-w-2xl md:mx-auto">
       <Card>
@@ -28,10 +28,13 @@ export default async function ProblemDescriptionPage({ searchParams }: { searchP
             Describe the problem or select from common issues below. Our AI will help classify it.
           </CardDescription>
         </CardHeader>
-        <form>
+        <form action="/book/location" method="GET">
+          <input type="hidden" name="mode" value={modeParam} />
+          {service && <input type="hidden" name="service" value={service} />}
           <CardContent className="space-y-6">
             <div className="space-y-4">
               <Textarea 
+                name="problem_description"
                 placeholder="E.g. My Activa starts but switches off after a few minutes..."
                 className="min-h-[120px]"
               />
@@ -66,7 +69,7 @@ export default async function ProblemDescriptionPage({ searchParams }: { searchP
           </CardContent>
           <CardFooter className="flex justify-between border-t p-6">
             <Link href="/home" className={buttonVariants({ variant: "ghost" })}>Cancel</Link>
-            <Link href={`/book/location${modeParam}`} className={buttonVariants({ variant: "default" })}>Continue</Link>
+            <Button type="submit">Continue</Button>
           </CardFooter>
         </form>
       </Card>

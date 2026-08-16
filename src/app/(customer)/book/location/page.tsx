@@ -5,11 +5,11 @@ import { Label } from '@/components/ui/label'
 import { MapPin } from 'lucide-react'
 import Link from 'next/link'
 
-export default async function LocationSelectionPage({ searchParams }: { searchParams: Promise<{ mode?: string }> }) {
-  const { mode } = await searchParams
+export default async function LocationSelectionPage({ searchParams }: { searchParams: Promise<{ mode?: string, service?: string, problem_description?: string }> }) {
+  const { mode, service, problem_description } = await searchParams
   const isUrgent = mode === 'urgent'
   const nextStep = isUrgent ? '/book/searching' : '/book/schedule'
-  const modeParam = mode ? `?mode=${mode}` : '?mode=scheduled'
+  const modeParam = mode || 'scheduled'
   return (
     <div className="p-4 md:p-8 md:max-w-2xl md:mx-auto">
       <Card>
@@ -22,7 +22,10 @@ export default async function LocationSelectionPage({ searchParams }: { searchPa
             Enter your location so we can find a mechanic nearby.
           </CardDescription>
         </CardHeader>
-        <form>
+        <form action={nextStep} method="GET">
+          <input type="hidden" name="mode" value={modeParam} />
+          {service && <input type="hidden" name="service" value={service} />}
+          {problem_description && <input type="hidden" name="problem_description" value={problem_description} />}
           <CardContent className="space-y-6">
             
             <Button variant="outline" className="w-full py-6 flex items-center justify-center gap-2 border-primary text-primary hover:bg-primary/5">
@@ -42,22 +45,22 @@ export default async function LocationSelectionPage({ searchParams }: { searchPa
             <div className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="city">City</Label>
-                <Input id="city" defaultValue="Navi Mumbai" />
+                <Input id="city" name="city" defaultValue="Navi Mumbai" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="area">Area / Locality</Label>
-                <Input id="area" defaultValue="Kharghar" />
+                <Input id="area" name="area" defaultValue="Kharghar" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="address">Detailed Address</Label>
-                <Input id="address" placeholder="Sector 12, Plot 45..." />
+                <Input id="address" name="address" placeholder="Sector 12, Plot 45..." />
               </div>
             </div>
 
           </CardContent>
           <CardFooter className="flex justify-between border-t p-6">
-            <Link href={`/book/problem${modeParam}`} className={buttonVariants({ variant: "ghost" })}>Back</Link>
-            <Link href={`${nextStep}${modeParam}`} className={buttonVariants({ variant: "default" })}>Continue</Link>
+            <Link href={`/book/problem?mode=${modeParam}${service ? `&service=${service}` : ''}`} className={buttonVariants({ variant: "ghost" })}>Back</Link>
+            <Button type="submit">Continue</Button>
           </CardFooter>
         </form>
       </Card>

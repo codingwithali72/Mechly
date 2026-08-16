@@ -4,16 +4,21 @@ import { MapPin, Bell, ArrowRight, Battery, Bike, Wrench, Zap, Droplets, Car, Se
 import Link from 'next/link'
 import { createClient, ensureCustomerProfile } from '@/lib/supabase/server'
 
-const SERVICES = [
-  { id: '1', name: 'Battery', icon: Battery },
-  { id: '2', name: 'Puncture', icon: Bike },
-  { id: '3', name: 'Brake', icon: Settings },
-  { id: '4', name: 'General Repair', icon: Wrench },
-  { id: '5', name: 'Oil Change', icon: Droplets },
-  { id: '6', name: 'Tyre', icon: Bike },
-  { id: '7', name: 'Electrical', icon: Zap },
-  { id: '8', name: 'More', icon: MoreHorizontal },
-]
+const ICON_MAP: Record<string, React.ElementType> = {
+  'battery': Battery,
+  'circle-dot': Bike,
+  'disc': Settings,
+  'wrench': Wrench,
+  'droplets': Droplets,
+  'circle': Bike,
+  'zap': Zap,
+  'cog': Settings,
+  'settings': Settings,
+  'siren': Bell,
+  'car': Car,
+  'bike': Bike,
+  'ellipsis': MoreHorizontal
+}
 
 export default async function CustomerHome() {
   const { profile, customer } = await ensureCustomerProfile()
@@ -24,6 +29,11 @@ export default async function CustomerHome() {
     .select('*')
     .eq('customer_id', customer.id)
     .order('created_at', { ascending: false })
+
+  const { data: dbServices } = await supabase
+    .from('services')
+    .select('*')
+    .limit(8)
 
   const firstName = profile.full_name?.split(' ')[0] || 'User'
 
@@ -83,16 +93,19 @@ export default async function CustomerHome() {
             <Link href="#" className="text-xs font-semibold text-[#E63946]">View all</Link>
           </div>
           <div className="grid grid-cols-4 gap-y-6 gap-x-3">
-            {SERVICES.map((service) => (
-              <Link href={`/book/problem?mode=scheduled&service=${service.id}`} key={service.id} className="flex flex-col items-center gap-[6px] group">
-                <div className="flex h-[56px] w-[56px] items-center justify-center rounded-[20px] bg-[#F8FAFC] transition-transform group-hover:scale-105 border border-slate-100 shadow-[0_2px_10px_rgb(0,0,0,0.01)]">
-                  <service.icon className="h-6 w-6 text-[#0C182A]" strokeWidth={1.5} />
-                </div>
-                <span className="text-center text-[11px] font-semibold text-[#0C182A]">
-                  {service.name}
-                </span>
-              </Link>
-            ))}
+            {dbServices?.map((service) => {
+              const IconComponent = service.icon ? ICON_MAP[service.icon] || Wrench : Wrench
+              return (
+                <Link href={`/book/problem?mode=scheduled&service=${service.id}`} key={service.id} className="flex flex-col items-center gap-[6px] group">
+                  <div className="flex h-[56px] w-[56px] items-center justify-center rounded-[20px] bg-[#F8FAFC] transition-transform group-hover:scale-105 border border-slate-100 shadow-[0_2px_10px_rgb(0,0,0,0.01)]">
+                    <IconComponent className="h-6 w-6 text-[#0C182A]" strokeWidth={1.5} />
+                  </div>
+                  <span className="text-center text-[11px] font-semibold text-[#0C182A] leading-tight">
+                    {service.name}
+                  </span>
+                </Link>
+              )
+            })}
           </div>
         </section>
 
