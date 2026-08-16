@@ -37,7 +37,7 @@ export default async function CustomerHome() {
     const { data: dbServices, error: sError } = await supabase
       .from('services')
       .select('*')
-      .limit(8)
+      .limit(4)
       
     if (sError) throw new Error('Services error: ' + sError.message)
 
