@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { useState, useEffect } from 'react'
 import { Loader2 } from 'lucide-react'
 
-export function SubmitButton({ children = "Continue", className = "", variant = "default" as any }: { children?: React.ReactNode, className?: string, variant?: string }) {
+export function SubmitButton({ children = "Continue", className = "", variant = "default" }: { children?: React.ReactNode, className?: string, variant?: "link" | "default" | "outline" | "secondary" | "ghost" | "destructive" | null | undefined }) {
   const [isPending, setIsPending] = useState(false)
 
   // Auto reset pending state after 5 seconds just in case of network failure
