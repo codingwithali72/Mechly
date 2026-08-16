@@ -11,10 +11,22 @@ const SLOTS = [
   "06:00 PM - 08:00 PM"
 ]
 
+const parseSlotStartHour = (slot: string) => {
+  const [time, modifier] = slot.split(' - ')[0].split(' ')
+  let [hours] = time.split(':')
+  let hour = parseInt(hours, 10)
+  if (modifier === 'PM' && hour < 12) hour += 12
+  if (modifier === 'AM' && hour === 12) hour = 0
+  return hour
+}
+
 export default async function ScheduleSelectionPage({ searchParams }: { searchParams: Promise<{ mode?: string, service?: string, problem_description?: string, city?: string, area?: string, address?: string }> }) {
   const { mode, service, problem_description, city, area, address } = await searchParams
   const modeParam = mode || 'scheduled'
   
+  const currentHour = new Date(new Date().getTime() + 5.5 * 60 * 60 * 1000).getUTCHours()
+  const todaySlots = SLOTS.filter(slot => parseSlotStartHour(slot) > currentHour)
+
   const backUrl = `/book/location?mode=${modeParam}${service ? `&service=${service}` : ''}${problem_description ? `&problem_description=${problem_description}` : ''}`
   
   return (
@@ -40,24 +52,30 @@ export default async function ScheduleSelectionPage({ searchParams }: { searchPa
             
             <div className="space-y-4">
               <h3 className="font-semibold text-lg">Today</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {SLOTS.map((slot) => (
-                  <label key={`today-${slot}`} className="cursor-pointer">
-                    <input type="radio" name="time_slot" value={`Today, ${slot}`} className="peer sr-only" defaultChecked={slot === '04:00 PM - 06:00 PM'} />
-                    <div className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-checked:border-primary peer-checked:bg-primary/5">
-                      <span className="font-medium text-sm">{slot}</span>
-                    </div>
-                  </label>
-                ))}
-              </div>
+              {todaySlots.length === 0 ? (
+                <div className="bg-slate-50 text-slate-500 p-4 rounded-lg text-sm text-center border border-dashed border-slate-200">
+                  No more slots available today. Please select a time for tomorrow.
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {todaySlots.map((slot, i) => (
+                    <label key={`today-${slot}`} className="cursor-pointer">
+                      <input type="radio" name="time_slot" value={`Today, ${slot}`} className="peer sr-only" defaultChecked={i === 0} />
+                      <div className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-checked:border-primary peer-checked:bg-primary/5">
+                        <span className="font-medium text-sm">{slot}</span>
+                      </div>
+                    </label>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="space-y-4 pt-4 border-t">
               <h3 className="font-semibold text-lg">Tomorrow</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {SLOTS.map((slot) => (
+                {SLOTS.map((slot, i) => (
                   <label key={`tomorrow-${slot}`} className="cursor-pointer">
-                    <input type="radio" name="time_slot" value={`Tomorrow, ${slot}`} className="peer sr-only" />
+                    <input type="radio" name="time_slot" value={`Tomorrow, ${slot}`} className="peer sr-only" defaultChecked={todaySlots.length === 0 && i === 0} />
                     <div className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-checked:border-primary peer-checked:bg-primary/5">
                       <span className="font-medium text-sm">{slot}</span>
                     </div>
