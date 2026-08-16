@@ -1,8 +1,9 @@
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { MapPin, Bell, ArrowRight, Battery, Bike, Wrench, Zap, Droplets, Car, Settings, MoreHorizontal, User, CalendarDays, Navigation, Plus } from 'lucide-react'
+import { MapPin, Bell, ArrowRight, Battery, Bike, Wrench, Zap, Droplets, Car, Settings, MoreHorizontal, User, CalendarDays, Navigation, Plus, Trash2 } from 'lucide-react'
 import Link from 'next/link'
 import { createClient, ensureCustomerProfile } from '@/lib/supabase/server'
+import { deleteVehicle } from '@/app/(customer)/vehicles/actions'
 
 const ICON_MAP: Record<string, React.ElementType> = {
   'battery': Battery,
@@ -39,6 +40,13 @@ export default async function CustomerHome() {
       .limit(8)
       
     if (sError) throw new Error('Services error: ' + sError.message)
+
+    const { data: recentBookings } = await supabase
+      .from('bookings')
+      .select('*, services(name, icon), mechanics(profiles(full_name))')
+      .eq('customer_id', customer.id)
+      .order('created_at', { ascending: false })
+      .limit(1)
 
     const firstName = profile?.full_name?.split(' ')[0] || 'User'
 
@@ -144,6 +152,14 @@ export default async function CustomerHome() {
                     <h4 className="font-bold text-[14px]">{vehicle.brand} {vehicle.model}</h4>
                     <p className="text-[12px] font-medium text-[#5C757D] capitalize">{vehicle.vehicle_type.toLowerCase()} {vehicle.registration_number ? `• ${vehicle.registration_number}` : ''}</p>
                   </div>
+                  <div className="ml-auto">
+                    <form action={deleteVehicle}>
+                      <input type="hidden" name="vehicle_id" value={vehicle.id} />
+                      <button type="submit" className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors active:scale-95" title="Delete Vehicle">
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </form>
+                  </div>
                 </div>
               ))
             )}
@@ -151,28 +167,37 @@ export default async function CustomerHome() {
         </section>
 
         {/* Recent Booking Section */}
-        <section>
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-base font-bold tracking-tight">Recent Booking</h3>
-            <Link href="#" className="text-xs font-semibold text-[#E63946]">View all</Link>
-          </div>
-          <Link href="/tracking/1" className="block bg-white rounded-[20px] p-4 shadow-[0_4px_20px_rgb(0,0,0,0.06)] border border-slate-100 active:scale-[0.98] transition-transform">
-            <div className="flex justify-between items-start">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 bg-[#F8FAFC] rounded-full flex items-center justify-center shrink-0 border border-slate-100">
-                  <Car className="h-5 w-5 text-[#1D3557]" strokeWidth={1.5} />
-                </div>
-                <div>
-                  <h4 className="font-bold text-[14px]">Battery Replacement</h4>
-                  <p className="text-[11px] font-medium text-[#5C757D] mt-0.5">Ahmed • 12 Aug 2026 • ₹750</p>
-                </div>
-              </div>
-              <Badge className="bg-[#E6F4EA] text-[#2A9D8F] hover:bg-[#E6F4EA] border border-[#2A9D8F]/20 px-3 py-1 rounded-full text-[10px] font-bold shadow-none">
-                Completed
-              </Badge>
+        {recentBookings && recentBookings.length > 0 && (
+          <section>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-base font-bold tracking-tight">Recent Booking</h3>
+              <Link href="/bookings" className="text-xs font-semibold text-[#E63946]">View all</Link>
             </div>
-          </Link>
-        </section>
+            {recentBookings.map((booking: any) => {
+              const ServiceIcon = booking.services?.icon ? ICON_MAP[booking.services.icon] || Wrench : Wrench
+              const mechanicName = booking.mechanics?.profiles?.full_name || 'Assigned Mechanic'
+              const date = new Date(booking.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+              return (
+                <Link key={booking.id} href={`/tracking/${booking.id}`} className="block bg-white rounded-[20px] p-4 shadow-[0_4px_20px_rgb(0,0,0,0.06)] border border-slate-100 active:scale-[0.98] transition-transform">
+                  <div className="flex justify-between items-start">
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 bg-[#F8FAFC] rounded-full flex items-center justify-center shrink-0 border border-slate-100">
+                        <ServiceIcon className="h-5 w-5 text-[#1D3557]" strokeWidth={1.5} />
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-[14px]">{booking.services?.name || 'Service Request'}</h4>
+                        <p className="text-[11px] font-medium text-[#5C757D] mt-0.5">{booking.status === 'SEARCHING' || booking.status === 'REQUESTED' ? 'Finding a mechanic...' : `${mechanicName} • ${date}`}</p>
+                      </div>
+                    </div>
+                    <Badge className="bg-[#E6F4EA] text-[#2A9D8F] hover:bg-[#E6F4EA] border border-[#2A9D8F]/20 px-3 py-1 rounded-full text-[10px] font-bold shadow-none">
+                      {booking.status}
+                    </Badge>
+                  </div>
+                </Link>
+              )
+            })}
+          </section>
+        )}
       </main>
 
       {/* Fixed Bottom Navigation exactly matching mockup */}

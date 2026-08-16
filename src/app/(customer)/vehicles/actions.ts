@@ -39,3 +39,23 @@ export async function addVehicle(formData: FormData) {
   revalidatePath('/home')
   redirect('/home')
 }
+
+export async function deleteVehicle(formData: FormData) {
+  const vehicleId = formData.get('vehicle_id') as string
+  if (!vehicleId) throw new Error('Vehicle ID is required')
+
+  const { customer } = await ensureCustomerProfile()
+  const supabase = await createClient()
+
+  const { error } = await supabase
+    .from('vehicles')
+    .delete()
+    .eq('id', vehicleId)
+    .eq('customer_id', customer.id) // Security check
+
+  if (error) {
+    throw new Error('Failed to delete vehicle: ' + error.message)
+  }
+
+  revalidatePath('/home')
+}
