@@ -29,7 +29,7 @@ export default function MechanicLayout({
           <IndianRupee className="h-5 w-5" />
           <span className="text-[10px] font-medium">Earnings</span>
         </Link>
-        <Link href="/profile" className="flex flex-1 flex-col items-center justify-center gap-1 text-muted-foreground hover:text-primary">
+        <Link href="/mechanic-profile" className="flex flex-1 flex-col items-center justify-center gap-1 text-muted-foreground hover:text-primary">
           <User className="h-5 w-5" />
           <span className="text-[10px] font-medium">Profile</span>
         </Link>
