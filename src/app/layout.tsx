@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
 import { DemoToggle } from "@/components/DemoToggle";
-import { Toaster } from "@/components/ui/sonner";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -24,7 +23,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className={`${poppins.className} ${poppins.variable} antialiased bg-slate-50 text-slate-900 selection:bg-primary/20`}>
         {children}
         <DemoToggle />
-        <Toaster />
       </body>
     </html>
   );
