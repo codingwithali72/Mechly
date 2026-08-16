@@ -2,6 +2,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import Link from 'next/link'
+import { SubmitButton } from '@/components/SubmitButton'
 
 const SLOTS = [
   "10:00 AM - 12:00 PM",
@@ -87,7 +88,7 @@ export default async function ScheduleSelectionPage({ searchParams }: { searchPa
           </CardContent>
           <CardFooter className="flex justify-between border-t p-6">
             <Link href={backUrl} className={buttonVariants({ variant: "ghost" })}>Back</Link>
-            <Button type="submit">Continue</Button>
+            <SubmitButton />
           </CardFooter>
         </form>
       </Card>

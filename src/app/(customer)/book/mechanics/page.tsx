@@ -4,6 +4,7 @@ import { Label } from '@/components/ui/label'
 import { User, Star, MapPin, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
+import { SubmitButton } from '@/components/SubmitButton'
 
 const MECHANICS = [
   { id: 'm1', name: 'Ahmed Doe', rating: 4.8, jobs: 127, distance: '2.5 km away' },
@@ -72,7 +73,7 @@ export default async function MechanicsSelectionPage({ searchParams }: { searchP
           </CardContent>
           <CardFooter className="flex justify-between border-t p-6">
             <Link href={backUrl} className={buttonVariants({ variant: "ghost" })}>Back</Link>
-            <Button type="submit">Continue</Button>
+            <SubmitButton />
           </CardFooter>
         </form>
       </Card>

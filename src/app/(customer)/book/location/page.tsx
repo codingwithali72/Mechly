@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label'
 import { MapPin } from 'lucide-react'
 import Link from 'next/link'
 import { CurrentLocationButton } from './CurrentLocationButton'
+import { SubmitButton } from '@/components/SubmitButton'
 
 export default async function LocationSelectionPage({ searchParams }: { searchParams: Promise<{ mode?: string, service?: string, problem_description?: string }> }) {
   const { mode, service, problem_description } = await searchParams
@@ -58,7 +59,7 @@ export default async function LocationSelectionPage({ searchParams }: { searchPa
           </CardContent>
           <CardFooter className="flex justify-between border-t p-6">
             <Link href={`/book/problem?mode=${modeParam}${service ? `&service=${service}` : ''}`} className={buttonVariants({ variant: "ghost" })}>Back</Link>
-            <Button type="submit">Continue</Button>
+            <SubmitButton />
           </CardFooter>
         </form>
       </Card>

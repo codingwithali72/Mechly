@@ -3,6 +3,7 @@ import { Button, buttonVariants } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import Link from 'next/link'
 import { ProblemForm } from './ProblemForm'
+import { SubmitButton } from '@/components/SubmitButton'
 
 export default async function ProblemDescriptionPage({ searchParams }: { searchParams: Promise<{ mode?: string, service?: string }> }) {
   const { mode, service } = await searchParams
@@ -27,7 +28,7 @@ export default async function ProblemDescriptionPage({ searchParams }: { searchP
           </CardContent>
           <CardFooter className="flex justify-between border-t p-6">
             <Link href="/home" className={buttonVariants({ variant: "outline" })}>Back</Link>
-            <Button type="submit" className="px-8">Continue</Button>
+            <SubmitButton className="px-8" />
           </CardFooter>
         </form>
       </Card>

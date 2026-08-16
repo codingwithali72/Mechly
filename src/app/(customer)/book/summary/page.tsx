@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { AlertTriangle, CalendarCheck } from 'lucide-react'
 import { createClient, ensureCustomerProfile } from '@/lib/supabase/server'
 import { createBooking } from '../actions'
+import { SubmitButton } from '@/components/SubmitButton'
 
 export default async function BookingSummaryPage({ searchParams }: { searchParams: Promise<{ mode?: string, service?: string, problem_description?: string, city?: string, area?: string, address?: string, time_slot?: string, mechanic_id?: string }> }) {
   const { mode, service, problem_description, city, area, address, time_slot, mechanic_id } = await searchParams
@@ -99,11 +100,11 @@ export default async function BookingSummaryPage({ searchParams }: { searchParam
           {mechanic_id && <input type="hidden" name="mechanic_id" value={mechanic_id} />}
           {dbVehicle && <input type="hidden" name="vehicle_id" value={dbVehicle.id} />}
           
-          <CardFooter className="flex flex-col gap-4 border-t p-6">
-            <Button type="submit" className="w-full text-lg font-semibold" size="lg">CONFIRM BOOKING</Button>
-            <Link href={backUrl} className={buttonVariants({ variant: "ghost" }) + " w-full"}>
-              {isUrgent ? "Cancel Request" : "Back to Mechanics"}
-            </Link>
+          <CardFooter className="flex-col gap-3 border-t p-6">
+            <SubmitButton className="w-full text-lg py-6" variant="default">
+              Confirm Booking
+            </SubmitButton>
+            <Link href="/home" className={buttonVariants({ variant: "ghost", className: "w-full text-muted-foreground" })}>Cancel Request</Link>
           </CardFooter>
         </form>
       </Card>
