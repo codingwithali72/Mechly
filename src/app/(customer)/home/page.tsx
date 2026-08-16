@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { MapPin, Bell, ArrowRight, Battery, Bike, Wrench, Zap, Droplets, Car, Settings, MoreHorizontal, User, CalendarDays, Navigation } from 'lucide-react'
 import Link from 'next/link'
@@ -55,14 +55,12 @@ export default function CustomerHome() {
           </div>
 
           <div className="mt-8">
-            <Button size="lg" className="w-full h-[52px] rounded-full bg-[#E53935] hover:bg-[#d32f2f] text-white font-semibold text-[15px] flex justify-between items-center px-6 shadow-[0_8px_25px_rgba(229,57,53,0.25)]" asChild>
-              <Link href="/book/problem?mode=scheduled">
-                Get a Mechanic
-                <div className="h-7 w-7 bg-white rounded-full flex items-center justify-center">
-                  <ArrowRight className="h-4 w-4 text-[#E53935]" strokeWidth={3} />
-                </div>
-              </Link>
-            </Button>
+            <Link href="/book/problem?mode=scheduled" className={buttonVariants({ size: "lg" }) + " w-full h-[52px] rounded-full bg-[#E53935] hover:bg-[#d32f2f] text-white font-semibold text-[15px] flex justify-between items-center px-6 shadow-[0_8px_25px_rgba(229,57,53,0.25)]"}>
+              Get a Mechanic
+              <div className="h-7 w-7 bg-white rounded-full flex items-center justify-center">
+                <ArrowRight className="h-4 w-4 text-[#E53935]" strokeWidth={3} />
+              </div>
+            </Link>
           </div>
         </section>
 
