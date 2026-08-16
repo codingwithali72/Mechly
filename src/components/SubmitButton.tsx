@@ -20,7 +20,7 @@ export function SubmitButton({ children = "Continue", className = "", variant = 
       type="submit" 
       variant={variant}
       className={className}
-      onClick={() => setIsPending(true)}
+      onClick={() => setTimeout(() => setIsPending(true), 10)}
       disabled={isPending}
     >
       {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
