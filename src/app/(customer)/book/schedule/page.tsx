@@ -1,6 +1,5 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button, buttonVariants } from '@/components/ui/button'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
 import Link from 'next/link'
 
@@ -41,36 +40,30 @@ export default async function ScheduleSelectionPage({ searchParams }: { searchPa
             
             <div className="space-y-4">
               <h3 className="font-semibold text-lg">Today</h3>
-              <RadioGroup name="time_slot" defaultValue="Today, 04:00 PM - 06:00 PM" className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {SLOTS.map((slot) => (
-                  <div key={`today-${slot}`}>
-                    <RadioGroupItem value={`Today, ${slot}`} id={`today-${slot}`} className="peer sr-only" />
-                    <Label
-                      htmlFor={`today-${slot}`}
-                      className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 [&:has([data-state=checked])]:border-primary cursor-pointer"
-                    >
-                      {slot}
-                    </Label>
-                  </div>
+                  <label key={`today-${slot}`} className="cursor-pointer">
+                    <input type="radio" name="time_slot" value={`Today, ${slot}`} className="peer sr-only" defaultChecked={slot === '04:00 PM - 06:00 PM'} />
+                    <div className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-checked:border-primary peer-checked:bg-primary/5">
+                      <span className="font-medium text-sm">{slot}</span>
+                    </div>
+                  </label>
                 ))}
-              </RadioGroup>
+              </div>
             </div>
 
             <div className="space-y-4 pt-4 border-t">
               <h3 className="font-semibold text-lg">Tomorrow</h3>
-              <RadioGroup name="time_slot" className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {SLOTS.map((slot) => (
-                  <div key={`tomorrow-${slot}`}>
-                    <RadioGroupItem value={`Tomorrow, ${slot}`} id={`tomorrow-${slot}`} className="peer sr-only" />
-                    <Label
-                      htmlFor={`tomorrow-${slot}`}
-                      className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 [&:has([data-state=checked])]:border-primary cursor-pointer"
-                    >
-                      {slot}
-                    </Label>
-                  </div>
+                  <label key={`tomorrow-${slot}`} className="cursor-pointer">
+                    <input type="radio" name="time_slot" value={`Tomorrow, ${slot}`} className="peer sr-only" />
+                    <div className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-checked:border-primary peer-checked:bg-primary/5">
+                      <span className="font-medium text-sm">{slot}</span>
+                    </div>
+                  </label>
                 ))}
-              </RadioGroup>
+              </div>
             </div>
 
           </CardContent>

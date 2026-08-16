@@ -1,6 +1,5 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button, buttonVariants } from '@/components/ui/button'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
 import { User, Star, MapPin, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
@@ -48,14 +47,11 @@ export default async function MechanicsSelectionPage({ searchParams }: { searchP
                 <p className="text-sm">There are no verified mechanics available in your area right now. You can continue booking and we will automatically assign the next available mechanic to your job.</p>
               </div>
             ) : (
-              <RadioGroup name="mechanic_id" defaultValue={dbMechanics[0]?.id} className="space-y-4">
-                {dbMechanics.map((mechanic) => (
-                  <div key={mechanic.id}>
-                    <RadioGroupItem value={mechanic.id} id={mechanic.id} className="peer sr-only" />
-                    <Label
-                      htmlFor={mechanic.id}
-                      className="flex items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 [&:has([data-state=checked])]:border-primary cursor-pointer"
-                    >
+              <div className="space-y-4">
+                {dbMechanics.map((mechanic, index) => (
+                  <label key={mechanic.id} className="cursor-pointer block">
+                    <input type="radio" name="mechanic_id" value={mechanic.id} className="peer sr-only" defaultChecked={index === 0} />
+                    <div className="flex items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-checked:border-primary peer-checked:bg-primary/5">
                       <div className="flex items-center gap-4">
                         <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center shrink-0">
                           <User className="h-6 w-6 text-muted-foreground" />
@@ -68,10 +64,10 @@ export default async function MechanicsSelectionPage({ searchParams }: { searchP
                           </div>
                         </div>
                       </div>
-                    </Label>
-                  </div>
+                    </div>
+                  </label>
                 ))}
-              </RadioGroup>
+              </div>
             )}
           </CardContent>
           <CardFooter className="flex justify-between border-t p-6">

@@ -1,17 +1,8 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button, buttonVariants } from '@/components/ui/button'
-import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import Link from 'next/link'
-
-const COMMON_PROBLEMS = [
-  "Bike won't start",
-  "Strange noise",
-  "Battery dead",
-  "Flat tyre",
-  "Brake issue",
-  "Other"
-]
+import { ProblemForm } from './ProblemForm'
 
 export default async function ProblemDescriptionPage({ searchParams }: { searchParams: Promise<{ mode?: string, service?: string }> }) {
   const { mode, service } = await searchParams
@@ -32,28 +23,7 @@ export default async function ProblemDescriptionPage({ searchParams }: { searchP
           <input type="hidden" name="mode" value={modeParam} />
           {service && <input type="hidden" name="service" value={service} />}
           <CardContent className="space-y-6">
-            <div className="space-y-4">
-              <Textarea 
-                name="problem_description"
-                placeholder="E.g. My Activa starts but switches off after a few minutes..."
-                className="min-h-[120px]"
-              />
-              
-              <div>
-                <h3 className="text-sm font-medium mb-3">Common Problems</h3>
-                <div className="flex flex-wrap gap-2">
-                  {COMMON_PROBLEMS.map((problem) => (
-                    <Badge 
-                      key={problem} 
-                      variant="outline" 
-                      className="cursor-pointer hover:bg-primary hover:text-primary-foreground py-1.5 px-3"
-                    >
-                      {problem}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            </div>
+            <ProblemForm />
             
             {/* Mock AI Triage Box (hidden initially, shown on interaction in real app) */}
             <div className="bg-blue-50 text-blue-900 p-4 rounded-lg border border-blue-200">
