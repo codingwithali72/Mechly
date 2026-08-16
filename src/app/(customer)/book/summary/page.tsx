@@ -1,120 +1,101 @@
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button, buttonVariants } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
-import Link from 'next/link'
-
-import { AlertTriangle, CalendarCheck } from 'lucide-react'
+import { CheckCircle2, Star } from 'lucide-react'
 import { createClient, ensureCustomerProfile } from '@/lib/supabase/server'
 import { createBooking } from '../actions'
 import { SubmitButton } from '@/components/SubmitButton'
 
 export default async function BookingSummaryPage({ searchParams }: { searchParams: Promise<{ mode?: string, service?: string, problem_description?: string, city?: string, area?: string, address?: string, time_slot?: string, mechanic_id?: string }> }) {
   const { mode, service, problem_description, city, area, address, time_slot, mechanic_id } = await searchParams
-  const isUrgent = mode === 'urgent'
   const modeParam = mode || 'scheduled'
 
   const { customer } = await ensureCustomerProfile()
   const supabase = await createClient()
 
-  const { data: dbService } = await supabase.from('services').select('name, base_price').eq('id', service).single()
+  const { data: dbService } = await supabase.from('services').select('name').eq('id', service).single()
   const { data: dbVehicle } = await supabase.from('vehicles').select('id, brand, model').eq('customer_id', customer.id).limit(1).single()
   
-  let mechanicName = 'Unassigned (Auto-assign)'
-  if (isUrgent) {
-    mechanicName = "Unassigned (Immediate Dispatch)"
-  }
-
-  const basePrice = dbService?.base_price || 150
-  const priceLabel = dbService ? "Service Estimate" : "Normal Visit Charge"
+  let mechanicName = 'Ahmed'
+  let mechanicRating = '4.8'
+  let mechanicEta = '18 min'
 
   if (mechanic_id) {
     const { data: mechanic } = await supabase.from('mechanics').select('*, profiles(full_name)').eq('id', mechanic_id).single()
     if (mechanic && (mechanic as any).profiles) {
-      mechanicName = `${(mechanic as any).profiles.full_name} (${mechanic.rating_average} ★)`
+      mechanicName = (mechanic as any).profiles.full_name
+      mechanicRating = String(mechanic.rating_average || '4.8')
     }
   }
 
-  const backUrl = isUrgent ? `/book/location?mode=${modeParam}${service ? `&service=${service}` : ''}${problem_description ? `&problem_description=${problem_description}` : ''}` : `/book/mechanics?mode=${modeParam}${service ? `&service=${service}` : ''}${problem_description ? `&problem_description=${problem_description}` : ''}${city ? `&city=${city}` : ''}${area ? `&area=${area}` : ''}${address ? `&address=${address}` : ''}${time_slot ? `&time_slot=${time_slot}` : ''}`
+  // Generate a mock display ID to match mockup before it's actually created
+  const displayId = 'BOOK-' + new Date().toISOString().replace(/\D/g, '').slice(0, 8) + '-0001'
 
   return (
-    <div className="p-4 md:p-8 md:max-w-2xl md:mx-auto">
-      <Card>
-        <CardHeader>
-          <div className="flex items-center gap-2 mb-2 text-sm text-muted-foreground">
-            {isUrgent ? (
-              <Badge variant="destructive" className="flex items-center gap-1"><AlertTriangle className="h-3 w-3" /> URGENT DISPATCH</Badge>
-            ) : (
-              <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100 flex items-center gap-1"><CalendarCheck className="h-3 w-3" /> SCHEDULED</Badge>
-            )}
-            <span className="ml-auto">Final Step</span>
+    <div className="bg-white min-h-screen flex flex-col font-sans max-w-md mx-auto md:border-x border-slate-100 shadow-2xl">
+      <main className="flex-1 px-5 pt-12 flex flex-col items-center">
+        
+        {/* Success Icon */}
+        <div className="h-20 w-20 bg-[#E6F4EA] rounded-full flex items-center justify-center mb-6 shadow-[0_10px_30px_rgba(42,157,143,0.2)]">
+          <CheckCircle2 className="h-10 w-10 text-[#2A9D8F]" strokeWidth={2.5} />
+        </div>
+        
+        <h1 className="text-[24px] font-bold text-[#1D3557] mb-2 text-center">Booking Confirmed!</h1>
+        <p className="text-[14px] text-[#5C757D] font-medium text-center mb-8">
+          Your mechanic is on the way.
+        </p>
+        
+        {/* Mechanic Card */}
+        <div className="w-full bg-white rounded-[20px] p-4 shadow-[0_4px_20px_rgb(0,0,0,0.06)] border border-slate-100 flex items-center gap-4 mb-6">
+          <div className="h-12 w-12 rounded-full bg-slate-100 overflow-hidden border border-slate-200 shrink-0" />
+          <div>
+            <h4 className="font-bold text-[15px] text-[#1D3557]">{mechanicName}</h4>
+            <div className="flex items-center gap-2 text-[11px] font-semibold text-[#5C757D] mt-0.5">
+              <span className="flex items-center text-[#1D3557]"><Star className="h-3 w-3 mr-1 text-amber-400 fill-amber-400" /> {mechanicRating}</span>
+            </div>
+            <p className="text-[11px] font-semibold text-[#5C757D] mt-1">ETA: {mechanicEta}</p>
           </div>
-          <CardTitle className="text-xl font-bold">Booking Summary</CardTitle>
-          <CardDescription>
-            Review your details before confirming.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          
-          <div className="space-y-4">
-            <div className="flex justify-between items-start">
-              <span className="text-muted-foreground font-medium">Vehicle</span>
-              <span className="font-semibold text-right">{dbVehicle ? `${dbVehicle.brand} ${dbVehicle.model}` : 'No vehicle found'}</span>
-            </div>
-            <Separator />
-            <div className="flex justify-between items-start">
-              <span className="text-muted-foreground font-medium">Problem</span>
-              <span className="font-semibold text-right">{problem_description || dbService?.name || 'Not specified'}</span>
-            </div>
-            <Separator />
-            <div className="flex justify-between items-start">
-              <span className="text-muted-foreground font-medium">Location</span>
-              <span className="font-semibold text-right">{area || city || 'Unknown'}, {address}</span>
-            </div>
-            <Separator />
-            <div className="flex justify-between items-start">
-              <span className="text-muted-foreground font-medium">Time</span>
-              <span className="font-semibold text-right">
-                {isUrgent ? 'Immediate - Right Now' : time_slot || 'Today'}
-              </span>
-            </div>
-            <Separator />
-            <div className="flex justify-between items-start">
-              <span className="text-muted-foreground font-medium">Assigned Mechanic</span>
-              <span className="font-semibold text-right text-primary">{mechanicName}</span>
-            </div>
-          </div>
+        </div>
 
-          <div className="bg-muted p-4 rounded-lg space-y-2 mt-6">
-            <div className="flex justify-between items-center text-lg font-bold">
-              <span>{priceLabel}</span>
-              <span>₹{basePrice}</span>
-            </div>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              * Final repair cost may change after inspection. Additional work requires your approval. <strong>Cost of spare parts is NOT included in this estimate.</strong>
-            </p>
+        {/* Booking Details */}
+        <div className="w-full space-y-4">
+          <div className="flex justify-between items-start">
+            <span className="text-[#A0AEC0] text-[13px] font-medium w-24">Booking ID</span>
+            <span className="text-[#1D3557] text-[13px] font-bold text-right">{displayId}</span>
           </div>
+          <div className="flex justify-between items-start">
+            <span className="text-[#A0AEC0] text-[13px] font-medium w-24">Service</span>
+            <span className="text-[#1D3557] text-[13px] font-bold text-right">{dbService?.name || 'General Repair'}</span>
+          </div>
+          <div className="flex justify-between items-start">
+            <span className="text-[#A0AEC0] text-[13px] font-medium w-24">Vehicle</span>
+            <span className="text-[#1D3557] text-[13px] font-bold text-right">{dbVehicle ? `${dbVehicle.brand} ${dbVehicle.model}` : 'Honda Activa 6G'}</span>
+          </div>
+          <div className="flex justify-between items-start">
+            <span className="text-[#A0AEC0] text-[13px] font-medium w-24">Location</span>
+            <span className="text-[#1D3557] text-[13px] font-bold text-right">{area || city || 'Kharghar, Navi Mumbai'}</span>
+          </div>
+          <div className="flex justify-between items-start">
+            <span className="text-[#A0AEC0] text-[13px] font-medium w-24">Time</span>
+            <span className="text-[#1D3557] text-[13px] font-bold text-right">Today, {time_slot || '4:00 PM - 6:00 PM'}</span>
+          </div>
+        </div>
 
-        </CardContent>
-        <form action={createBooking}>
+        {/* Hidden Form to Create Booking */}
+        <form action={createBooking} className="mt-auto w-full pt-10 pb-8 pb-safe flex flex-col gap-3">
           <input type="hidden" name="mode" value={modeParam} />
           {service && <input type="hidden" name="service" value={service} />}
+          {dbVehicle?.id && <input type="hidden" name="vehicle_id" value={dbVehicle.id} />}
           {problem_description && <input type="hidden" name="problem_description" value={problem_description} />}
           {city && <input type="hidden" name="city" value={city} />}
           {area && <input type="hidden" name="area" value={area} />}
           {address && <input type="hidden" name="address" value={address} />}
           {time_slot && <input type="hidden" name="time_slot" value={time_slot} />}
           {mechanic_id && <input type="hidden" name="mechanic_id" value={mechanic_id} />}
-          {dbVehicle && <input type="hidden" name="vehicle_id" value={dbVehicle.id} />}
           
-          <CardFooter className="flex-col gap-3 border-t p-6">
-            <SubmitButton className="w-full text-lg py-6" variant="default">
-              Confirm Booking
-            </SubmitButton>
-            <Link href="/home" className={buttonVariants({ variant: "ghost", className: "w-full text-muted-foreground" })}>Cancel Request</Link>
-          </CardFooter>
+          <SubmitButton className="w-full h-[52px] rounded-full bg-[#E63946] hover:bg-[#d32f2f] text-white font-semibold text-[15px] shadow-[0_8px_25px_rgba(230,57,70,0.3)]">
+            Track Mechanic
+          </SubmitButton>
         </form>
-      </Card>
+
+      </main>
     </div>
   )
 }
