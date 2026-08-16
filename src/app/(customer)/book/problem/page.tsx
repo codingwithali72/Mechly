@@ -24,22 +24,10 @@ export default async function ProblemDescriptionPage({ searchParams }: { searchP
           {service && <input type="hidden" name="service" value={service} />}
           <CardContent className="space-y-6">
             <ProblemForm />
-            
-            {/* Mock AI Triage Box (hidden initially, shown on interaction in real app) */}
-            <div className="bg-blue-50 text-blue-900 p-4 rounded-lg border border-blue-200">
-              <div className="flex items-start gap-3">
-                <span className="text-2xl">✨</span>
-                <div>
-                  <p className="font-semibold text-sm">AI Assistant</p>
-                  <p className="text-sm mt-1">Looks like an Engine or Electrical issue. We recommend a general mechanic.</p>
-                </div>
-              </div>
-            </div>
-
           </CardContent>
           <CardFooter className="flex justify-between border-t p-6">
-            <Link href="/home" className={buttonVariants({ variant: "ghost" })}>Cancel</Link>
-            <Button type="submit">Continue</Button>
+            <Link href="/home" className={buttonVariants({ variant: "outline" })}>Back</Link>
+            <Button type="submit" className="px-8">Continue</Button>
           </CardFooter>
         </form>
       </Card>

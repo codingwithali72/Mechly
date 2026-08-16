@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { MapPin } from 'lucide-react'
 import Link from 'next/link'
+import { CurrentLocationButton } from './CurrentLocationButton'
 
 export default async function LocationSelectionPage({ searchParams }: { searchParams: Promise<{ mode?: string, service?: string, problem_description?: string }> }) {
   const { mode, service, problem_description } = await searchParams
@@ -28,10 +29,7 @@ export default async function LocationSelectionPage({ searchParams }: { searchPa
           {problem_description && <input type="hidden" name="problem_description" value={problem_description} />}
           <CardContent className="space-y-6">
             
-            <Button variant="outline" className="w-full py-6 flex items-center justify-center gap-2 border-primary text-primary hover:bg-primary/5">
-              <MapPin className="h-5 w-5" />
-              Use Current Location
-            </Button>
+            <CurrentLocationButton />
 
             <div className="relative">
               <div className="absolute inset-0 flex items-center">

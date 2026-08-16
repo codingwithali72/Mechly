@@ -48,6 +48,18 @@ export default async function CustomerHome() {
       .order('created_at', { ascending: false })
       .limit(1)
 
+    const { data: recentLocation } = await supabase
+      .from('service_locations')
+      .select('city, area')
+      .eq('customer_id', customer.id)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single()
+
+    const locationText = recentLocation 
+      ? [recentLocation.area, recentLocation.city].filter(Boolean).join(', ')
+      : 'Set your location'
+
     const firstName = profile?.full_name?.split(' ')[0] || 'User'
 
   return (
@@ -59,7 +71,7 @@ export default async function CustomerHome() {
           <h2 className="text-sm font-semibold text-[#5C757D] mb-0.5">Hi, {firstName} 👋</h2>
           <div className="flex items-center gap-1 cursor-pointer">
             <MapPin className="h-4 w-4 text-[#E63946]" />
-            <span className="text-[13px] font-bold">Kharghar, Navi Mumbai</span>
+            <span className="text-[13px] font-bold">{locationText}</span>
             <span className="text-[10px] ml-1">▼</span>
           </div>
         </div>
@@ -103,7 +115,7 @@ export default async function CustomerHome() {
         <section>
           <div className="flex items-center justify-between mb-5">
             <h3 className="text-base font-bold tracking-tight">Quick Services</h3>
-            <Link href="#" className="text-xs font-semibold text-[#E63946]">View all</Link>
+            <Link href="/book/problem?mode=scheduled" className="text-xs font-semibold text-[#E63946]">View all</Link>
           </div>
           <div className="grid grid-cols-4 gap-y-6 gap-x-3">
             {dbServices?.map((service) => {
