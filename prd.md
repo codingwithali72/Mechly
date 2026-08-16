@@ -2,7 +2,7 @@
 # PRODUCT REQUIREMENTS DOCUMENT — MVP
 
 Version: 1.0
-Status: Development Specification
+Status: Development Specification 
 Product: Mechly
 Platform: Responsive Web Application / PWA
 Primary Demo Geography: Mumbai + Navi Mumbai
